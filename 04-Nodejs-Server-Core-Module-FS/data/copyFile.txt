@@ -1,0 +1,109 @@
+1] first you have to install some packages in globally
+-> npm install -g typescript
+-> npm install -g ts-node
+-> npm install -g nodemon
+ 
+then create workspace backend - dev and open vs code and add some packages locally
+--> package.json -> npm init --yes
+--> tsconfig.json -> tsc --init
+-> npm i @types/node
+
+how to run a program
+-> tsc app.ts node app.js [ instead use -> ts-node app.ts ]
+-> nodemon app.ts (Server)
+-> npm start
+
+
+2] Nodejs - Server - Creation
+-> create one file called server.ts
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+import http, { IncomingMessage, Server, ServerResponse } from "http";
+
+const hostname: string = "127.0.0.1";
+const port: number = 5000;
+
+const server: Server = http.createServer(
+  (request: IncomingMessage, response: ServerResponse) => {
+    response.statusCode == 200;
+    response.setHeader("Content-Type", "text/html");
+    response.end(
+      `<h3 style="font-family:Lato, sans-serif; color:green">Welcome to Node Js Server</h3>`
+    );
+    //end() => Calling the writable.end() method signals that no more data will be written to the Writable. The optional chunk and encoding arguments allow one final      
+    // additional chunk of data to be written immediately before closing the stream.
+    // Calling the write method after calling end will raise an error.
+  }
+);
+
+server.listen(port, hostname, () => {
+  console.log(`Node js Server is started  at http://${hostname}:${port}`);
+});  //Start a server listening for connections. A net.Server can be a TCP or an IPC server depending on what it listens to.
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------- 
+-> to start server use command -> nodemon server.ts
+else to use npm start you need to do some configuration in package.json like below
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+{
+  "name": "02-nodej-server-creation",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon server.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/node": "^18.11.18"
+  }
+}
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------- 
+
+3] Core Module OS
+
+==> OS module = it is design to extract the OS related information through your nodejs pgm
+          = The [node:os] module provides operating system-related utility methods and properties
+  
+Example::  
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	
+import http, { IncomingMessage, Server, ServerResponse } from "http";
+import os from "os";
+
+const hostname: string = "127.0.0.1";
+const port: number = 5000;
+
+const server: Server = http.createServer(
+  (request: IncomingMessage, response: ServerResponse) => {
+    response.statusCode = 200;
+    response.setHeader("Content-Type", "text/html");
+
+    //! OS Module
+    let osData = {
+        totalMemory : os.totalmem(),  //=> Returns the total amount of system memory in bytes as an integer.
+        freeMemory: os.freemem(),     //=> Returns the amount of free system memory in bytes as an integer.
+        homeDir: os.homedir(),        //=> Returns the string path of the current user's home directory.
+        computerName: os.hostname()   //=> Returns the host name of the operating system as a string
+    }
+
+    response.end(`<pre>${JSON.stringify(osData)}</pre>`);
+ 
+  }
+);
+
+server.listen(port, hostname, () => {
+  console.log(`Node Js Server started at http://${hostname}:${port}`);
+});
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+==> FS module [file system]  = The node:fs module enables interacting with the file system in a way modeled on standard POSIX functions.
+
+Common use for the File System module:
+
+Read files
+Create files
+Update files
+Delete files
+Rename files
