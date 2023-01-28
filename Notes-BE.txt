@@ -1,0 +1,374 @@
+1] first you have to install some packages in globally
+-> npm install -g typescript
+-> npm install -g ts-node
+-> npm install -g nodemon
+ 
+then create workspace backend - dev and open vs code and add some packages locally
+--> package.json -> npm init --yes
+--> tsconfig.json -> tsc --init
+-> npm i @types/node
+
+how to run a program
+-> tsc app.ts node app.js [ instead use -> ts-node app.ts ]
+-> nodemon app.ts (Server)
+-> npm start
+
+
+2] Nodejs - Server - Creation
+-> create one file called server.ts
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+import http, { IncomingMessage, Server, ServerResponse } from "http";
+
+const hostname: string = "127.0.0.1";
+const port: number = 5000;
+
+const server: Server = http.createServer(
+  (request: IncomingMessage, response: ServerResponse) => {
+    response.statusCode == 200;
+    response.setHeader("Content-Type", "text/html");
+    response.end(
+      `<h3 style="font-family:Lato, sans-serif; color:green">Welcome to Node Js Server</h3>`
+    );
+    //end() => Calling the writable.end() method signals that no more data will be written to the Writable. The optional chunk and encoding arguments allow one final      
+    // additional chunk of data to be written immediately before closing the stream.
+    // Calling the write method after calling end will raise an error.
+  }
+);
+
+server.listen(port, hostname, () => {
+  console.log(`Node js Server is started  at http://${hostname}:${port}`);
+});  //Start a server listening for connections. A net.Server can be a TCP or an IPC server depending on what it listens to.
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------- 
+-> to start server use command -> nodemon server.ts
+else to use npm start you need to do some configuration in package.json like below
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+{
+  "name": "02-nodej-server-creation",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon server.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/node": "^18.11.18"
+  }
+}
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------- 
+
+3] Core Module OS
+
+==> OS module = it is design to extract the OS related information through your nodejs pgm
+          = The [node:os] module provides operating system-related utility methods and properties
+  
+Example::  
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	
+import http, { IncomingMessage, Server, ServerResponse } from "http";
+import os from "os";
+
+const hostname: string = "127.0.0.1";
+const port: number = 5000;
+
+const server: Server = http.createServer(
+  (request: IncomingMessage, response: ServerResponse) => {
+    response.statusCode = 200;
+    response.setHeader("Content-Type", "text/html");
+
+    //! OS Module
+    let osData = {
+        totalMemory : os.totalmem(),  //=> Returns the total amount of system memory in bytes as an integer.
+        freeMemory: os.freemem(),     //=> Returns the amount of free system memory in bytes as an integer.
+        homeDir: os.homedir(),        //=> Returns the string path of the current user's home directory.
+        computerName: os.hostname()   //=> Returns the host name of the operating system as a string
+    }
+
+    response.end(`<pre>${JSON.stringify(osData)}</pre>`);
+ 
+  }
+);
+
+server.listen(port, hostname, () => {
+  console.log(`Node Js Server started at http://${hostname}:${port}`);
+});
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+==> FS module [file system]  = The node:fs module enables interacting with the file system in a way modeled on standard POSIX functions.
+
+Common use for the File System module:
+
+Read files    ===  fs.readFile(path[, options], callback)
+Create files  ===  
+		 
+	The File System module has methods for creating new files:
+
+	fs.appendFile()
+	fs.open()
+	fs.writeFile() == fs.writeFile(file, data[, options], callback)
+
+Update files  ===
+	 
+	The File System module has methods for updating files:
+
+	fs.appendFile()
+	fs.writeFile()
+
+Delete files  ===
+	To delete a file with the File System module,  use the fs.unlink() method.
+
+Rename files ===
+	To rename a file with the File System module,  use the fs.rename() method.
+
+example:
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+import http, { IncomingMessage, Server, ServerResponse } from "http";
+import fs from "fs";
+import path from "path";
+
+const hostname: string = "127.0.0.1";
+const port: number = 5000;
+
+const server: Server = http.createServer(
+  (request: IncomingMessage, response: ServerResponse) => {
+    response.statusCode = 200;
+    response.setHeader("Content-Type", "text/html");
+
+    //! FS madule => The "node:fs" module enables interacting with the file system in a way modeled on standard POSIX functions.
+    // fs.readFile(path.join(__dirname, 'data', 'data.txt'), 'utf-8', (error, result)=> {
+    //     if(error) {
+    //         console.log(error)
+    //     }
+
+    //     fs.writeFile(path.join(__dirname, 'data', 'copyFile.txt'), result ,'utf-8', (error)=> {
+    //       if(error) {
+    //         console.log(error)
+    //       }
+    //       response.end("data is written")
+    //     })
+    //     // response.end(`<pre>${result}</pre>`)
+    // })
+
+    // fs.readFile(path.join(__dirname, "server.ts"), "utf-8", (error, result) => {
+    //   if (error) {
+    //     console.log(error);
+    //   }
+    //   fs.writeFile(
+    //     path.join(__dirname, "data" ,"data.txt"),
+    //     result,
+    //     "utf-8",
+    //     (error) => {
+    //       if (error) {
+    //         console.log(error);
+    //       }
+    //       response.end(`<pre>data is wrritten</pre>`);
+    //     }
+    //   );
+    // });
+
+    fs.readFile(path.join(__dirname, "data", "data.txt"), "utf-8", (errror, result)=> {
+      if (errror) {
+        console.log(errror);
+      }
+      response.end(`<pre>${result}</pre>`)
+    })
+  }
+);
+
+server.listen(port, hostname, () => {
+  console.log(`Node Js Server started at http://${hostname}:${port}`);
+});
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+4] Custom-Module
+
+ module === Module in Node. js is a simple or complex functionality organized in single or multiple JavaScript files which can be reused throughout the Node. js    		application. Each module in Node. js has its own context, so it cannot interfere with other modules or pollute global scope.
+
+ 
+ Custom-Module === creating our own modules is called custom-modules
+
+ example = 
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+!] StringUtil.ts
+
+export class StringUtil {
+  public static printLength(str: string): number {
+    return str.length;
+  }
+
+  public static printTriangle(str: string): string {
+    let temp: string = "";
+    for (let i: number = 0; i <= str.length - 1; i++) {
+      for (let j: number = 0; j <= i; j++) {
+        temp += `${str.charAt(j)}`;
+      }
+      temp += `\n`;
+    }
+    return temp;
+  }
+}
+
+
+
+!!]  server.ts
+
+import http, { IncomingMessage, Server, ServerResponse } from "http";
+import { StringUtil } from "./util/StringUtil";
+
+const hostname: string = "127.0.0.1";
+const port: number = 5000;
+
+const server: Server = http.createServer(
+  (request: IncomingMessage, response: ServerResponse) => {
+    response.statusCode = 200;
+    response.setHeader("Content-Type", "text/html");
+
+    //! String Util
+    const CustomerName:string = "Sandep M S"
+    let length = StringUtil.printLength(CustomerName)
+    
+    //! 
+    const channelName: string = "SVT-Traders" 
+    const result: string = StringUtil.printTriangle(channelName)
+    response.end(`<pre>Length: ${result}</pre>`);
+
+
+
+  }
+);
+
+server.listen(port, hostname, () => {
+  console.log(`Node js Server is started at http://${hostname}:${port}`);
+});
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+5] Routing
+
+What is Routing? 
+= Routing defines the way in which the client requests are handled by the application endpoints.
+
+  Implementation of routing in Node.js: There are two ways to implement routing in node.js which are listed below:
+
+  * By Using Framework
+  * Without using Framework
+
+Routing without Framework:
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+import http, { IncomingMessage, Server, ServerResponse } from "http";
+
+const hostname: string = "127.0.0.1";
+const port: number = 5000;
+
+const server: Server = http.createServer(
+  (request: IncomingMessage, response: ServerResponse) => {
+    response.statusCode == 200;
+    response.setHeader("Content-Type", "text/html");
+
+     //! Routing
+    ApiRouter.mapRoutes(request, response);
+  }
+);
+
+server.listen(port, hostname, () => {
+  console.log(`Node js Server is started  at http://${hostname}:${port}`);
+}); //Start a server listening for connections. A net.Server can be a TCP or an IPC server depending on what it listens to.
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+import http, { IncomingMessage, ServerResponse } from "http";
+
+export class ApiRouter {
+  public static mapRoutes(request: IncomingMessage, response: ServerResponse) {
+    let url: string | undefined = request.url;
+    let method: string | undefined = request.method;
+    let result: string = "";
+
+    if (url === "/" && method === "GET") {
+      result = `<h3 style="font-family:Lato, sans-serif; color:green">Welcome to Nodejs</h3>`;
+    } else if (url === "/about" && method === "GET") {
+      result = `<h3 style="font-family:Lato, sans-serif; color:green">About Page</h3>`;
+    } else if (url === "/services" && method === "GET") {
+      result = `<h3 style="font-family:Lato, sans-serif; color:green">Services Page</h3>`;
+    } else if (url === "/contact" && method === "GET") {
+      result = `<h3 style="font-family:Lato, sans-serif; color:green">contact Page</h3>`;
+    } else {
+      result = `<h3 style="font-family:Lato, sans-serif; color:red">Page Not Found</h3>`;
+    }
+
+    response.end(`${result}`);
+  }
+}
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+!] POST
+
+
+import http, { IncomingMessage, Server, ServerResponse } from "http";
+
+const hostname: string = "127.0.0.1";
+const port: number = 5000;
+
+const server: Server = http.createServer(
+  (request: IncomingMessage, response: ServerResponse) => {
+    response.statusCode == 200;
+    response.setHeader("Content-Type", "application/json");
+
+    //!URL AND POST
+    if (request.url === "/user" && request.method === "POST") {
+     try {
+      let body: any = "";
+      request
+        .on("data", (chunk) => {
+          //Adds the listener function to the end of the listeners array for the event named eventName. No checks are made to see if the listener has already been added. Multiple calls passing the same combination of eventNameand listener will result in the listener being added, and called, multiple times.
+          body += chunk;
+        })
+        .on("end", () => {
+          let formData = JSON.parse(body);
+          response.end(`<pre>${JSON.stringify(formData)}</pre>`);
+        });
+     }
+     catch (error) {
+      console.log(error);
+     }
+    }
+
+    // response.end(
+    //   `<h3 style="font-family:Lato, sans-serif; color:green">Welcome to Node Js Server</h3>`
+    // );
+    //end() => Calling the writable.end() method signals that no more data will be written to the Writable. The optional chunk and encoding arguments allow one final additional chunk of data to be written immediately before closing the stream.
+    // Calling the write method after calling end will raise an error.
+  }
+);
+
+server.listen(port, hostname, () => {
+  console.log(`Node js Server is started  at http://${hostname}:${port}`);
+}); //Start a server listening for connections. A net.Server can be a TCP or an IPC server depending on what it listens to.
+
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
