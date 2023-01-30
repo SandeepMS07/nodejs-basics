@@ -1,0 +1,594 @@
+Express Js
+
+   -> Express is a node js web application framework that provides broad features for building web and mobile applications. It is used to build a single page, multipage,     and hybrid web application. It's a layer built on the top of the Node js that helps manage servers and routes.
+
+   -> It is used for designing and building web applications quickly and easily
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+create workspace backend - dev and open vs code and add some packages locally
+--> package.json -> npm init --yes
+--> tsconfig.json -> tsc --init
+--> npm i @types/node
+--> npm i express @types/express
+
+app.get('/')
+app.post('/')
+app.put('/')
+
+
+
+response.send() ->  for html tag response
+response.sendFile() ->  for html page response
+response.json() -> for json response
+response.download() -> for downloadable response
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+import express from "express";
+
+const app: express.Application = express(); //Creates an Express application. The express() function is a top-level function exported by the express module.
+
+const hostname: string = "127.0.0.1";
+const port: number = 5000;
+
+app.get("/", (request: express.Request, response: express.Response) => {
+  response
+    .status(200)
+    .send(
+      `<h3 style="font-family:Lato, sans-serif; color:green">Welcome to express js</h3>`
+    );
+});
+app.listen(port, hostname, () => {
+  console.log(`Express Server is started at http://${hostname}:${port}`);
+});
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+\\Routing//
+
+	-> Routing refers to determining how an application responds to a client request to a particular endpoint, which is a URI (or path) and a specific HTTP request method (GET, POST, and so on).
+
+      -> Each route can have one or more handler functions, which are executed when the route is matched.
+
+Route definition takes the following structure:
+
+app.METHOD(PATH, HANDLER)
+Where:
+
+app is an instance of express.
+METHOD is an HTTP request method, in lowercase.
+PATH is a path on the server.
+HANDLER is the function executed when the route is matched.
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+import express from "express";
+import apiRouter from "./router/appRouter";
+
+const app: express.Application = express(); //Creates an Express application. The express() function is a top-level function exported by the express module.
+
+const hostname: string = "127.0.0.1";
+const port: number = 5000;
+
+app.get("/", (request: express.Request, response: express.Response) => {
+  response
+    .status(200)
+    .send(
+      `<h3 style="font-family:Lato, sans-serif; color:green">Welcome to express js</h3>`
+    );
+});
+
+//api configuration
+app.use('/api', apiRouter)
+
+app.listen(port, hostname, () => {
+  console.log(`Express Server is started at http://${hostname}:${port}`);
+});
+ 
+--------------------------------------------------------------------------------------------------------
+
+import express from "express";
+
+const apiRouter: express.Router = express.Router();
+
+//logic
+apiRouter.get("/", (request: express.Request, response: express.Response) => {
+  response.status(200).send(
+    `<h3 style="font-family:Lato, sans-serif; color:green">
+      Welcome to api Router
+      </h3>`
+  );
+});
+
+apiRouter.get("/test", (request: express.Request, response: express.Response) => {
+    response.status(200).send(
+      `<h3 style="font-family:Lato, sans-serif; color:green">
+        Welcome to api Router Test path
+        </h3>`
+    );
+  });
+
+export default apiRouter;
+
+--------------------------------------------------------------------------------------------------------
+
+import express from "express";
+
+const userRouter: express.Router = express.Router();
+
+//logic
+userRouter.get("/", (request: express.Request, response: express.Response) => {
+  response.status(200).send(
+    `<h3 style="font-family:Lato, sans-serif; color:green">
+      Welcome to user Router
+      </h3>`
+  );
+});
+
+userRouter.get("/test", (request: express.Request, response: express.Response) => {
+    response.status(200).send(
+      `<h3 style="font-family:Lato, sans-serif; color:green">
+        Welcome to user Router Test path
+        </h3>`
+    );
+  });
+
+export default userRouter;
+
+
+--------------------------------------------------------------------------------------------------------
+
+
+
+http://127.0.0.1:5000/            ==> Welcome to express js
+http://127.0.0.1:5000/api/        ==> Welcome to api Router
+http://127.0.0.1:5000/api/test    ==> Welcome to api Router Test path
+
+http://127.0.0.1:5000/user/       ==> Welcome to user Router
+http://127.0.0.1:5000/user/test/  ==> Welcome to user Router Test path
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+//Handling form Data using post method\\
+
+
+import express from "express";
+import userRouter from "./router/userRouter";
+
+const app: express.Application = express(); //Creates an Express application. The express() function is a top-level function exported by the express module.
+
+const hostname: string = "127.0.0.1";
+const port: number = 5000;
+
+
+
+
+//configure express to recieve form data
+
+//!important to write
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
+
+
+
+app.get("/", (request: express.Request, response: express.Response) => {
+  response
+    .status(200)
+    .send(
+      `<h3 style="font-family:Lato, sans-serif; color:green">Welcome to express js</h3>`
+    );
+});
+
+//configuration
+app.use("/users", userRouter);
+
+app.listen(port, hostname, () => {
+  console.log(`Express Server is started at http://${hostname}:${port}`);
+});
+
+---------------------------------------------------------------------------------------------------------
+
+
+import express from "express";
+
+const userRouter: express.Router = express.Router();
+
+/*
+    @usage: to test url
+    @url: http://127.0.0.1:5000/users/
+    @method: get
+    @fields: no-fields
+    @access" PUBLIC
+*/
+
+userRouter.get("/", (request: express.Request, response: express.Response) => {
+  response
+    .status(200)
+    .send(
+      `<h3 style="font-family:Lato, sans-serif; color:green">Welcome to user Router</h3>`
+    );
+});
+
+
+/*
+    @usage: to check the form data
+    @url: http://127.0.0.1:5000/users/login
+    @method: post
+    @fields: name, password
+    @access" PUBLIC
+*/
+
+userRouter.post(
+  "/login",
+  (request: express.Request, response: express.Response) => {
+    let formData = request.body; //to receive the form data from client
+    response.status(200).json({
+      msg: "form data is received",
+      formData: formData,
+    });
+  }
+);
+
+export default userRouter;
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+//* middleware *\\
+
+The middleware in node. js is a function that will have all the access for requesting an object, responding to an object, and moving to the next middleware function in the application request-response cycle.
+
+
+import express from "express";
+import appLogger from "./middleware/appLogger";
+import apiRouter from "./router/apiRouter";
+import userRouter from "./router/userRouter";
+
+const app: express.Application = express(); //Creates an Express application. The express() function is a top-level function exported by the express module.
+
+const hostname: string = "127.0.0.1";
+const port: number = 5000;
+
+app.use(appLogger); //! to log all the api request
+
+//configure express to recieve form data //!important to write
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
+//configuration
+app.use("/users", userRouter);
+app.use("/api", apiRouter);
+
+app.listen(port, hostname, () => {
+  console.log(`Express Server is started at http://${hostname}:${port}`);
+});
+
+//!output
+//[/api/] [GET] - [30/1/2023] - [12:23:31 pm]
+// [/] [GET] - [30/1/2023] - [12:23:31 pm]
+// [/api/test/] [GET] - [30/1/2023] - [12:23:45 pm]
+
+
+-----------------------------------------------------------------------------------------
+
+import express from "express";
+
+let appLogger = (
+  request: express.Request,
+  response: express.Response,
+  next: express.NextFunction
+) => {
+  //url, method, time, data
+  let url = request.url;
+  let method = request.method;
+  let date = new Date().toLocaleDateString();
+  let time = new Date().toLocaleTimeString();
+
+  let result: string = `[${url}] [${method}] - [${date}] - [${time}]`;
+  console.log(result);
+
+  next(); //! mandatory function
+};
+
+export default appLogger;
+
+----------------------------------------------------------------------------------------
+
+import express from "express";
+import appLogger from "../middleware/appLogger";
+
+const apiRouter: express.Router = express.Router();
+
+//logic
+//! to log only for this request
+apiRouter.get(
+  "/",
+  appLogger,
+  (request: express.Request, response: express.Response) => {
+    response.status(200).send(
+      `<h3 style="font-family:Lato, sans-serif; color:green">
+      Welcome to api Router
+      </h3>`
+    );
+  }
+);
+
+apiRouter.get(
+  "/test",
+  (request: express.Request, response: express.Response) => {
+    response.status(200).send(
+      `<h3 style="font-family:Lato, sans-serif; color:green">
+        Welcome to api Router Test path
+        </h3>`
+    );
+  }
+);
+
+export default apiRouter;
+
+-----------------------------------------------------------------------------------------
+
+import express from "express";
+
+const userRouter: express.Router = express.Router();
+
+/*
+    @usage: to test url
+    @url: http://127.0.0.1:5000/users/
+    @method: get
+    @fields: no-fields
+    @access" PUBLIC
+*/
+
+userRouter.get("/", (request: express.Request, response: express.Response) => {
+  response
+    .status(200)
+    .send(
+      `<h3 style="font-family:Lato, sans-serif; color:green">Welcome to user Router</h3>`
+    );
+});
+
+
+/*
+    @usage: to check the form data
+    @url: http://127.0.0.1:5000/users/login
+    @method: post
+    @fields: name, password
+    @access" PUBLIC
+*/
+
+userRouter.post(
+  "/login",
+  (request: express.Request, response: express.Response) => {
+    let formData = request.body; //to receive the form data from client
+    response.status(200).json({
+      msg: "form data is received",
+      formData: formData,
+    });
+  }
+);
+
+export default userRouter;
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+ // Express JS Server with Password Encryption \\
+
+--> we use third party middleware we use called bscryptjs
+
+==> to install we use [ npm i bcryptjs @types/bcryptjs ]
+
+first step is to create salt means it generate the random string
+then it convert to the hashed password
+
+
+import express from "express";
+import userRouter from "./router/userRouter";
+
+const app: express.Application = express(); //Creates an Express application. The express() function is a top-level function exported by the express module.
+
+const hostname: string = "127.0.0.1";
+const port: number = 5000;
+
+//configure express to receive the formdata
+app.use(express.json());
+
+app.get("/", (request: express.Request, response: express.Response) => {
+  response
+    .status(200)
+    .send(
+      `<h3 style="font-family:Lato, sans-serif; color:green">Welcome to express js</h3>`
+    );
+});
+
+//api configuration
+app.use("/user", userRouter);
+
+app.listen(port, hostname, () => {
+  console.log(`Express Server is started at http://${hostname}:${port}`);
+});
+
+
+-----------------------------------------------------------------------------------------------------
+
+import express from "express";
+import bcrypt from "bcryptjs";
+
+const userRouter: express.Router = express.Router();
+
+//logic
+userRouter.get("/", (request: express.Request, response: express.Response) => {
+  response.status(200).send(
+    `<h3 style="font-family:Lato, sans-serif; color:green">
+      Welcome to user Router
+      </h3>`
+  );
+});
+
+userRouter.post(
+  "/register",
+  async (request: express.Request, response: express.Response) => {
+    let { name, email, password } = request.body;
+    try {
+      let salt = await bcrypt.genSalt(10);
+      let hashedPassword = await bcrypt.hash(password, salt);
+      response.status(200).json({
+        user: { name, email, password },
+        hashedPassword: hashedPassword,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+
+  
+  }
+);
+
+export default userRouter;
+
+------------------------------------------------------------- 
+
+/// output \\\
+
+{
+  "user": {
+    "name": "sandeep m s",
+    "email": "sandeepms746@gmail.com",
+    "password": "sandy@123"
+  },
+  "hashedPassword": "$2a$10$cBfQBiRtkolbaB5x/4ket.h7pIXet/JhdKfj.xd1SS.j09K96VcpG"
+}
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+//Form Validations//
+
+ we use third party middleware called express-validator
+ --> express-validator is a set of express.js middlewares that wraps validator.js validator and sanitizer functions.
+ --> npm install --save express-validator @types/express-validator
+
+
+
+import express from "express";
+import { body, validationResult } from "express-validator";
+
+const userRouter: express.Router = express.Router();
+
+//logic
+userRouter.get("/", (request: express.Request, response: express.Response) => {
+  response.status(200).send(
+    `<h3 style="font-family:Lato, sans-serif; color:green">
+      Welcome to user Router
+      </h3>`
+  );
+});
+
+userRouter.post(
+  "/register",
+  [
+    body("name").not().isEmpty().withMessage("Name is Required"),
+    body("email").isEmail().withMessage("Proper Email is Required"),
+  ],
+  (request: express.Request, response: express.Response) => {
+    const errors = validationResult(request);
+
+    if (!errors.isEmpty()) {
+      return response.status(400).json({ errors: errors.array() });
+    }
+
+    let { name, email } = request.body;
+    try {
+      response.status(200).json({
+        user: { name, email },
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+);
+
+export default userRouter;
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+

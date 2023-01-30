@@ -31,7 +31,7 @@ const server: Server = http.createServer(
     //   `<h3 style="font-family:Lato, sans-serif; color:green">Welcome to Node Js Server</h3>`
     // );
     //end() => Calling the writable.end() method signals that no more data will be written to the Writable. The optional chunk and encoding arguments allow one final additional chunk of data to be written immediately before closing the stream.
-    // Calling the write method after calling end will raise an error.
+    // Calling the write method after calling end will raise an error.F
   }
 );
 
